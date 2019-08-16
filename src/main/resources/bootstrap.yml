@@ -1,0 +1,21 @@
+server:
+  port: ${PORT:8879}
+spring:
+  cloud:
+    config:
+      uri: ${SETTINGS_API_URI}
+      failFast: true
+      retry:
+        initialInterval: 3000
+        multiplier: 1.3
+        maxInterval: 5000
+        maxAttempts: 200
+  application:
+    name: inspector-gateway-registry-api
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
