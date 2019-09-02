@@ -19,3 +19,11 @@ eureka:
   client:
     registerWithEureka: false
     fetchRegistry: false
+
+jwt:
+  secretKey: "secretKey"
+  validityTime: 3600000
+
+zuul:
+  routes:
+    inspector-user-api: /auth
