@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8879}
+  port: ${PORT:8877}
 spring:
   cloud:
     config:
@@ -11,14 +11,12 @@ spring:
         maxInterval: 5000
         maxAttempts: 200
   application:
-    name: inspector-gateway-registry-api
+    name: inspector-gateway-api
 
 eureka:
-  instance:
-    hostname: localhost
   client:
-    registerWithEureka: false
-    fetchRegistry: false
+    service-url:
+      defaultZone: ${EUREKA_URI}
 
 jwt:
   secretKey: "secretKey"
@@ -26,4 +24,5 @@ jwt:
 
 zuul:
   routes:
-    inspector-user-api: /auth
+    inspector-user-api: /user-api/**
+    inspector-form-api: /form-api/**

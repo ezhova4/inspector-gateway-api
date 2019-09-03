@@ -1,7 +1,6 @@
-package ru.clevertec.inspector.gatewayregistry.security;
+package ru.clevertec.inspector.gateway.security;
 
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,9 +24,9 @@ public class JwtTokenProvider {
     }
 
 
-    public boolean validate(String accessToken) throws JwtException, IllegalArgumentException{
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken);
-            return true;
+    public boolean validate(String accessToken) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException {
+        Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken);
+        return true;
     }
 
     public Authentication getAuthentication(String accessToken) {

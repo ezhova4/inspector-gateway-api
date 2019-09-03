@@ -1,4 +1,4 @@
-package ru.clevertec.inspector.gatewayregistry.security;
+package ru.clevertec.inspector.gateway.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -16,31 +16,18 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenFilter jwtTokenFilter;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-//                .addFilterAfter(jwtTokenFilter, BasicAuthenticationFilter.class)
+                .addFilterAfter(jwtTokenFilter, BasicAuthenticationFilter.class)
                 .httpBasic().disable()
-                .cors().and().csrf().disable()
+                .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
+                .antMatchers("/user-api/auth/**").permitAll()
+                .anyRequest().authenticated();
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // Allow eureka client to be accessed without authentication
-        web.ignoring().antMatchers("/*/")//
-                .antMatchers("/eureka/**")//
-                .antMatchers(HttpMethod.OPTIONS, "/**"); // Request type options should be allowed.
-    }
-
-
 }
