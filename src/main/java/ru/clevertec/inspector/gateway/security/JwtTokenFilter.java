@@ -1,6 +1,10 @@
 package ru.clevertec.inspector.gateway.security;
 
-import io.jsonwebtoken.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,7 +29,7 @@ public class JwtTokenFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        ObjectMapper objectMapper = new ObjectMapper();
         String accessToken = ((HttpServletRequest) request).getHeader("X-Access");
         if (accessToken != null) {
             try {
@@ -33,7 +37,12 @@ public class JwtTokenFilter extends GenericFilterBean {
                     SecurityContextHolder.getContext().setAuthentication(jwtTokenProvider.getAuthentication(accessToken));
                 }
             } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-                log.error("ERROR", e);
+                ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED, e.getLocalizedMessage());
+                ((HttpServletResponse) response).setHeader("Content-Type", "application/json");
+                ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getOutputStream().write(objectMapper.writeValueAsString(errorResponse).getBytes());
+                log.error("ERROR: {}", e.getLocalizedMessage());
+                return;
             }
         }
         chain.doFilter(request, response);
